@@ -27,6 +27,7 @@ public class MyApp {
             })
             .path("injected", MyHandler.class) // Map to a dependency injected handler
             .prefix("static", nested -> nested.fileSystem("assets/images", Chain::files)) // Bind the /static app path to the src/ratpack/assets/images dir
+            .path("start", ctx -> ctx.redirect("injected"))
             .all(ctx -> ctx.render("root handler!"))
         )
     );
