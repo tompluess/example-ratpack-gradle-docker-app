@@ -1,11 +1,15 @@
 buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'io.ratpack:ratpack-gradle:1.0.0',
-                  'com.github.jengelman.gradle.plugins:shadow:1.2.1'
-    }
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'io.ratpack:ratpack-gradle:1.0.0',
+    'com.github.jengelman.gradle.plugins:shadow:1.2.1'
+  }
+}
+
+plugins {
+  id 'net.researchgate.release' version '2.4.0'
 }
 
 if (!JavaVersion.current().java8Compatible) {
@@ -18,34 +22,36 @@ apply plugin: "io.ratpack.ratpack-java"
 apply plugin: "com.github.johnrengelman.shadow"
 
 repositories {
-    jcenter()
+  jcenter()
 }
 
 dependencies {
-    testCompile 'junit:junit:4.11'
+  testCompile 'junit:junit:4.11'
 
-    // This is a Guice ratpack app
-    compile ratpack.dependency("guice")
-    runtime 'org.slf4j:slf4j-simple:1.7.10'
+  // This is a Guice ratpack app
+  compile ratpack.dependency("guice")
+  runtime 'org.slf4j:slf4j-simple:1.7.10'
 }
+
+
 
 // The “ratpack” plugin is IDEA aware.
 // It will create a run configuration in IDEA to launch your app in your IDE, with hot reloading.
 apply plugin: "idea"
 
 idea {
-    project {
-        //use JDK 1.8 in idea
-        jdkName "1.8"
-        languageLevel "1.8"
-        ipr {
-            withXml { provider ->
-                def node = provider.asNode()
-                //configure git support for the project in idea
-                node.component.find { it.'@name' == 'VcsDirectoryMappings' }?.mapping[0].'@vcs' = 'Git'
-            }
-        }
+  project {
+    //use JDK 1.8 in idea
+    jdkName "1.8"
+    languageLevel "1.8"
+    ipr {
+      withXml { provider ->
+        def node = provider.asNode()
+        //configure git support for the project in idea
+        node.component.find { it.'@name' == 'VcsDirectoryMappings' }?.mapping[0].'@vcs' = 'Git'
+      }
     }
+  }
 }
 
 //some CI config
