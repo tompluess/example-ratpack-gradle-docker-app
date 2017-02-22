@@ -12,14 +12,9 @@ plugins {
   id 'net.researchgate.release' version '2.4.0'
 }
 
-if (!JavaVersion.current().java8Compatible) {
-  throw new IllegalStateException("Must be built with Java 8 or higher")
-}
-
-// The “ratpack” plugin applies the “application” plugin, making it easy to create a standalone application.
-// See: http://gradle.org/docs/current/userguide/application_plugin.html
 apply plugin: "io.ratpack.ratpack-java"
 apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "idea"
 
 repositories {
   jcenter()
@@ -33,32 +28,9 @@ dependencies {
   runtime 'org.slf4j:slf4j-simple:1.7.10'
 }
 
+mainClassName = "ratpack.example.java.MyApp"
+
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
 }
-
-
-// The “ratpack” plugin is IDEA aware.
-// It will create a run configuration in IDEA to launch your app in your IDE, with hot reloading.
-apply plugin: "idea"
-
-idea {
-  project {
-    //use JDK 1.8 in idea
-    jdkName "1.8"
-    languageLevel "1.8"
-    ipr {
-      withXml { provider ->
-        def node = provider.asNode()
-        //configure git support for the project in idea
-        node.component.find { it.'@name' == 'VcsDirectoryMappings' }?.mapping[0].'@vcs' = 'Git'
-      }
-    }
-  }
-}
-
-//some CI config
-apply from: file("gradle/ci.gradle")
-
-mainClassName = "ratpack.example.java.MyApp"
