@@ -1,8 +1,3 @@
-// The “ratpack” plugin applies the “application” plugin, making it easy to create a standalone application.
-// See: http://gradle.org/docs/current/userguide/application_plugin.html
-apply plugin: "io.ratpack.ratpack-java"
-apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: 'com.bmuschko.docker-remote-api'
 
 buildscript {
   repositories {
@@ -24,6 +19,12 @@ plugins {
 repositories {
   jcenter()
 }
+
+
+apply plugin: "io.ratpack.ratpack-java"
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: 'com.bmuschko.docker-remote-api'
+
 
 dependencies {
   testCompile 'junit:junit:4.11'
