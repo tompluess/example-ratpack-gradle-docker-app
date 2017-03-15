@@ -1,9 +1,13 @@
+
 buildscript {
   repositories {
     jcenter()
   }
   dependencies {
-    classpath 'io.ratpack:ratpack-gradle:1.0.0'
+    classpath 'io.ratpack:ratpack-gradle:1.0.0',
+                'com.bmuschko:gradle-docker-plugin:3.0.3',
+         'com.kohlschutter.junixsocket:junixsocket-common:2.0.4',
+         'com.kohlschutter.junixsocket:junixsocket-native-common:2.0.4'
   }
 }
 
@@ -12,6 +16,7 @@ plugins {
 }
 
 apply plugin: "io.ratpack.ratpack-java"
+apply plugin: 'com.bmuschko.docker-remote-api'
 apply plugin: "idea"
 
 repositories {
@@ -21,9 +26,37 @@ repositories {
 dependencies {
   testCompile 'junit:junit:4.11'
 
-  // This is a Guice ratpack app
-  compile ratpack.dependency("guice")
-  runtime 'org.slf4j:slf4j-simple:1.7.10'
+    compile 'com.kohlschutter.junixsocket:junixsocket-common:2.0.4'
+    compile 'com.kohlschutter.junixsocket:junixsocket-native-common:2.0.4'
+
+    // This is a Guice ratpack app
+    compile ratpack.dependency("guice")
+    runtime 'org.slf4j:slf4j-simple:1.7.10'
+
+}
+
+if (!JavaVersion.current().java8Compatible) {
+    throw new IllegalStateException("Must be built with Java 8 or higher")
+}
+
+
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+task createDockerfile(type: Dockerfile) {
+    destFile = project.file('build/mydockerfile/Dockerfile')
+    from 'postman/newman_alpine33'
+    maintainer 'Tom Pluess "tom.pluess@skyr.ch"'
+}
+
+task buildImage(type: DockerBuildImage) {
+    dependsOn createDockerfile
+    inputDir = createDockerfile.destFile.parentFile
+    tag = 'skyr.ch/ratpack'
+}
+
+docker {
+    url = 'unix:///var/run/docker.sock'
 }
 
 mainClassName = "ratpack.example.java.MyApp"
