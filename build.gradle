@@ -5,24 +5,28 @@ apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'io.ratpack:ratpack-gradle:1.0.0',
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'io.ratpack:ratpack-gradle:1.0.0',
                 'com.github.jengelman.gradle.plugins:shadow:1.2.1',
                 'com.bmuschko:gradle-docker-plugin:3.0.3',
          'com.kohlschutter.junixsocket:junixsocket-common:2.0.4',
          'com.kohlschutter.junixsocket:junixsocket-native-common:2.0.4'
-    }
+  }
+}
+
+plugins {
+  id 'net.researchgate.release' version '2.4.0'
 }
 
 repositories {
-    jcenter()
+  jcenter()
 }
 
 dependencies {
-    testCompile 'junit:junit:4.11'
+  testCompile 'junit:junit:4.11'
 
     compile 'com.kohlschutter.junixsocket:junixsocket-common:2.0.4'
     compile 'com.kohlschutter.junixsocket:junixsocket-native-common:2.0.4'
@@ -57,26 +61,9 @@ docker {
     url = 'unix:///var/run/docker.sock'
 }
 
-// The “ratpack” plugin is IDEA aware.
-// It will create a run configuration in IDEA to launch your app in your IDE, with hot reloading.
-apply plugin: "idea"
-
-idea {
-    project {
-        //use JDK 1.8 in idea
-        jdkName "1.8"
-        languageLevel "1.8"
-        ipr {
-            withXml { provider ->
-                def node = provider.asNode()
-                //configure git support for the project in idea
-                node.component.find { it.'@name' == 'VcsDirectoryMappings' }?.mapping[0].'@vcs' = 'Git'
-            }
-        }
-    }
-}
-
-//some CI config
-apply from: file("gradle/ci.gradle")
-
 mainClassName = "ratpack.example.java.MyApp"
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
